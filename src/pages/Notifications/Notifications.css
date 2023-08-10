@@ -1,0 +1,110 @@
+
+.notifications {
+    display: flex;
+    flex-direction: column;
+    height: max-content;
+    height: 100%;
+}
+
+.notifications .list {
+    background: var(--color-blue-hover);
+    border-radius: 15px;
+    max-height: 180px;
+    height: auto;
+    position: relative;
+    overflow-y: scroll;
+    padding-left: 0;
+}
+
+.list::-webkit-scrollbar {
+    display: none;
+}
+
+.notifications .title {
+    font-family: "Inria Sans";
+    font-weight: 300;
+    line-height: normal;
+    font-size: 1rem;
+  }
+
+.notifications .title span {
+    color: rgb(145, 145, 145);
+    font-weight: 200;
+    font-family: 'Inria Sans';
+}
+
+.card-notif {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.card-notif .left {
+    display: flex;
+    flex-direction: column;
+}
+
+.card-notif .time-sub {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+
+.card-notif .accepted {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-green-accepted);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-accepted-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+}
+
+.card-notif .accepted span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.card-notif .problem span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+}
+
+.card-notif .time-sub span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+    font-style: italic;
+    font-size: small;
+    padding-right: 20px;
+}
+
+.time-sub a {
+    color: var(--color-blue-submission);
+    font-size: small;
+    font-weight: 600;
+}
+
+.item{
+    display: flex;
+    flex-direction: row;
+}
+
+ul {
+    list-style-type: none;
+    margin: 0;
+}

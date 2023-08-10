@@ -1,0 +1,107 @@
+.item {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+}
+
+.item .left-user {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.item .left-user span{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    justify-self: center;
+    color: var(--color-black-problem-time);
+    text-align: center;
+    font-size: small;
+}
+
+.item .right-detail-notif {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    padding-right: 10px;
+}
+
+.item .right-detail-notif .left .problem span {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    justify-self: center;
+    color: var(--color-black-problem-time);
+    text-align: center;
+    font-size: small;
+}
+
+.item .right-detail-notif .left .time-sub {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.5rem;
+}
+
+.item .right-detail-notif .left .time-sub .sub{
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-content: flex-start;
+}
+
+.item .right-detail-notif .accepted {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: var(--color-green-accepted);
+    text-align: center;
+    border-radius: 8px;
+    border: 1px solid var(--color-green-accepted-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+}
+
+.item .right-detail-notif .accepted span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+    margin-bottom: 2px;
+}
+
+.item .right-detail-notif .left .problem span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 400;
+}
+
+.item .right-detail-notif .time-sub .time span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 600;
+    font-style: italic;
+    font-size: 0.70rem;
+    line-height: normal;
+    padding-right: 10px;
+}
+
+.item .right-detail-notif .left .time-sub .sub span{
+    color: var(--color-blue-submission);
+    font-size: x-small;
+    justify-self: center;
+}
