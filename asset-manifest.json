@@ -1,15 +1,15 @@
 {
   "files": {
-    "main.css": "/acforce/static/css/main.2d495402.css",
-    "main.js": "/acforce/static/js/main.3a53c4e9.js",
-    "static/media/hacker.jpg": "/acforce/static/media/hacker.bb151deed7564efd7c3f.jpg",
-    "static/media/logo.svg": "/acforce/static/media/logo.4254a8f2c9c852d3aacc83302b69b008.svg",
-    "index.html": "/acforce/index.html",
-    "main.2d495402.css.map": "/acforce/static/css/main.2d495402.css.map",
-    "main.3a53c4e9.js.map": "/acforce/static/js/main.3a53c4e9.js.map"
+    "main.css": "/acforce-react-app/static/css/main.2d495402.css",
+    "main.js": "/acforce-react-app/static/js/main.b9ed1f99.js",
+    "static/media/hacker.jpg": "/acforce-react-app/static/media/hacker.bb151deed7564efd7c3f.jpg",
+    "static/media/logo.svg": "/acforce-react-app/static/media/logo.4254a8f2c9c852d3aacc83302b69b008.svg",
+    "index.html": "/acforce-react-app/index.html",
+    "main.2d495402.css.map": "/acforce-react-app/static/css/main.2d495402.css.map",
+    "main.b9ed1f99.js.map": "/acforce-react-app/static/js/main.b9ed1f99.js.map"
   },
   "entrypoints": [
     "static/css/main.2d495402.css",
-    "static/js/main.3a53c4e9.js"
+    "static/js/main.b9ed1f99.js"
   ]
 }
