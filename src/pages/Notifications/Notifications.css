@@ -6,7 +6,7 @@
     height: 100%;
 }
 
-.notifications .list {
+.notifications div .list {
     background: var(--color-blue-hover);
     border-radius: 15px;
     max-height: 180px;
@@ -67,7 +67,32 @@
     flex-shrink: 0;
 }
 
+.card-notif .wa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-red-wa);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-wa-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+}
+
 .card-notif .accepted span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.card-notif .wa span {
     color: var(--color-white-accepted-span);
     flex-shrink: 0;
     line-height: normal;
@@ -107,4 +132,170 @@
 ul {
     list-style-type: none;
     margin: 0;
+}
+
+
+/* SNACK-BAR */
+
+.snack-notify {
+    display: flex;
+    flex-direction: row;
+    margin-top: 10px;
+    margin-bottom: 10px;
+    justify-content: space-between;
+    border-radius: 10px;
+    background-color: #d4eafa;
+    height: 40px;
+    width: 100%;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 10px;
+    padding-bottom: 15px;
+    border: 1px solid #8dd0ff;
+}
+
+.snack-notify .left {
+    display: flex;
+    flex-direction: column;
+    margin-right: 5px;
+}
+
+.snack-notify .time-sub {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    margin-top: 0.1rem;
+}
+
+.snack-notify .accepted {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-green-accepted);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-accepted-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+    margin-left: 5px;
+}
+
+.snack-notify .wa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-red-wa);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-wa-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+    margin-left: 5px;
+}
+
+.snack-notify .accepted span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.snack-notify .wa span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.snack-notify .problem span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+    font-size: small;
+}
+
+.snack-notify .time-sub span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+    font-style: italic;
+    font-size: small;
+    padding-right: 20px;
+}
+
+.snack-notify.accepted {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-green-accepted);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-accepted-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+}
+
+.snack-notify .wa {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: auto;
+    background: var(--color-red-wa);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-wa-border);
+    padding-left: 20px;
+    padding-right: 20px;
+    flex-shrink: 0;
+}
+
+.snack-notify .accepted span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.snack-notify .wa span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+}
+
+.snack-notify .problem span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+}
+
+.snack-notify .time-sub span {
+    color: var(--color-black-problem-time);
+    font-family: 'Inria Sans';
+    font-weight: 900;
+    font-style: italic;
+    font-size: small;
+    padding-right: 20px;
 }

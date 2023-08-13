@@ -1,38 +1,61 @@
-import React from "react";
+import React, { useContext } from "react";
+import { useState } from "react";
+import { useEffect } from "react";
 import "./NotificationList.css";
+import "../Skeletons/Skeleton.css";
+import SkeletonElement from "../Skeletons/SkeletonElement";
+import { AppContext } from "../../Helper/Context";
 
-function NotificationList() {
+type LastSubmission = {
+  handle: string;
+  problem_name: string;
+  date: string;
+  link: string;
+  verdict: string;
+};
+
+function NotificationList(props: any) {
+  // console.log("Props: ", props);
+  const [data, setData] = useState(props);
+  const { all_submissions, setAllSubmissions } = useContext(AppContext);
+
   return (
     <>
-      <div className="item">
-        <div className="left-user">
-          <span>CodeTyper</span>
-        </div>
-
-        <div className="right-detail-notif">
-          <div className="left">
-            <div className="problem">
-              <span>Problem A - E Power of Points</span>
-            </div>
-            <div className="time-sub">
-              <div className="time">
-                <span>07 August 2023 21:45</span>
+      <div className="list">
+        {all_submissions &&
+          all_submissions.map((data) => (
+            <div className="item">
+              <div className="left-user">
+                <span>{data.handle}</span>
               </div>
 
-              <div className="sub">
-                <a href="#">
-                    <span> 
-                        Check submission
-                    </span>
-                </a>
+              <div className="right-detail-notif">
+                <div className="left">
+                  <div className="problem">
+                    <span>{data.problem_name || <SkeletonElement />}</span>
+                  </div>
+                  <div className="time-sub">
+                    <div className="time">
+                      <span>{data.date || <SkeletonElement />}</span>
+                    </div>
+
+                    <div className="sub">
+                      <a href={data.link}> Check submission </a>
+                    </div>
+                  </div>
+                </div>
+
+                <div
+                  className={
+                    (data.verdict === "WA" ? "wa" : "accepted") ||
+                    "Waiting ..."
+                  }
+                >
+                  <span>{data.verdict === "WA" ? "wa" : "accepted"}</span>
+                </div>
               </div>
             </div>
-          </div>
-
-          <div className="accepted">
-            <span>Accepted</span>
-          </div>
-        </div>
+          ))}
       </div>
     </>
   );

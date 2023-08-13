@@ -2,13 +2,22 @@ import React from 'react'
 import CloseIcon from '@mui/icons-material/Close';
 import './Friend.css';
 
-function Friend() {
+type HandleDelete = (id: number) => void;
+type PrettyProps = {
+  id: number,
+  name: string,
+  handleDelete: HandleDelete
+}
+
+const Friend = (props: PrettyProps) => {
+  // console.log(props);
+
   return (
     <div className="friend">
         <div className="friend-name">
-            <span>CodeGuy</span>
+            <span>{ props.name}</span>
         </div>
-        <div className="close-icon">
+        <div className="close-icon" onClick={() => props.handleDelete(props.id)}>
             <CloseIcon fontSize="small"/>
         </div>
     </div>

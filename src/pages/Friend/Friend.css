@@ -1,94 +1,98 @@
 .friend {
-    display: flex;
-    flex-direction: row;
-    background: var(--color-grey-friend-background);
-    border: 5px;
-    margin: 3px;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding: 3px;
-    justify-content: space-between;
-    justify-self: center;
-    align-self: center;
+  display: flex;
+  flex-direction: row;
+  background: var(--color-grey-friend-background);
+  border: 5px;
+  margin: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding: 3px;
+  justify-content: space-between;
+  justify-self: center;
+  align-self: center;
+
+  &:hover {
+    border: 1px solid grey;
+  }
 }
 
 .friend-name {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding-left: 5px;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: 5px;
 }
 
 .close-icon {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    align-items: center;
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
 
-    &:hover {
-      cursor: pointer;
-    }
+  &:hover {
+    cursor: pointer;
+  }
 }
 
 .friend span {
-    text-align: center;
-    font-size: small;
+  text-align: center;
+  font-size: small;
 }
 
 .new-friend {
-    display: flex;
-    flex-direction: row;
-    background: var(--color-grey-friend-background);
-    border: 5px;
-    margin: 3px;
-    padding-left: 5px;
-    padding-right: 5px;
-    padding: 3px;
-    justify-self: center;
-    align-self: center;
-    justify-content: space-between;
+  display: flex;
+  flex-direction: row;
+  background: var(--color-grey-friend-background);
+  border: 5px;
+  margin: 3px;
+  padding-left: 5px;
+  padding-right: 5px;
+  padding: 3px;
+  justify-self: center;
+  align-self: center;
+  justify-content: space-between;
 }
 
 .new-friend input {
-    text-align: center;
-    align-items: center;
-    align-self: center;
+  text-align: center;
+  align-items: center;
+  align-self: center;
+  border: none;
+  color: var(--color-grey-friend-placeholder);
+  font-weight: 700;
+  line-height: normal;
+  font-size: 0.8rem;
+  padding: 5px;
+  transition: border 0.3s;
+  width: 5rem;
+  background: var(--color-grey-friend-background);
+
+  &:focus {
     border: none;
+    outline: none;
+  }
+
+  &::placeholder {
     color: var(--color-grey-friend-placeholder);
-    font-weight: 700;
-    line-height: normal;
-    font-size: 0.8rem;
-    padding: 5px;
-    transition: border 0.3s;
-    width: 5rem;
-    background: var(--color-grey-friend-background);
-    
-    &:focus {
-      border: none;
-      outline: none;
-    }
-
-    &::placeholder {
-        color: var(--color-grey-friend-placeholder);
-    }
   }
+}
 
-  .new-friend-name {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    padding-left: 5px;
-  }
+.new-friend-name {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding-left: 5px;
+}
 
-  .add-icon {
-    display: flex;
-    justify-content: center;
-    flex: 1;
-    align-items: center;
-    justify-self: center;
-    padding-right: 5px;
-    
-    &:hover {
-      cursor: pointer;
-    }
+.add-icon {
+  display: flex;
+  justify-content: center;
+  flex: 1;
+  align-items: center;
+  justify-self: center;
+  padding-right: 5px;
+
+  &:hover {
+    cursor: pointer;
   }
+}

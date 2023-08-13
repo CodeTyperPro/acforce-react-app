@@ -63,13 +63,36 @@
     text-align: center;
     border-radius: 8px;
     border: 1px solid var(--color-green-accepted-border);
-    padding-left: 20px;
-    padding-right: 20px;
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 3.8rem;
     flex-shrink: 0;
     margin-top: 5px;
     margin-bottom: 5px;
     margin-left: 5px;
     margin-right: 5px;
+    height: 2rem;
+    justify-content: center;
+}
+
+.item .right-detail-notif .wa {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    background: var(--color-red-wa);
+    text-align: center;
+    border-radius: 8px;
+    border: 2px solid var(--color-green-wa-border);
+    padding-left: 8px;
+    padding-right: 8px;
+    width: 3.8rem;
+    flex-shrink: 0;
+    margin-top: 5px;
+    margin-bottom: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    justify-content: center;
+    height: 2rem;
 }
 
 .item .right-detail-notif .accepted span {
@@ -82,6 +105,20 @@
     letter-spacing: 0px;
     font-size: 1rem;
     margin-bottom: 2px;
+    align-items: center;
+}
+
+.item .right-detail-notif .wa span {
+    color: var(--color-white-accepted-span);
+    flex-shrink: 0;
+    line-height: normal;
+    font-style: normal;
+    font-weight: 500;
+    font-family: 'Inria Sans';
+    letter-spacing: 0px;
+    font-size: 1rem;
+    margin-bottom: 2px;
+    align-items: center;
 }
 
 .item .right-detail-notif .left .problem span {
@@ -104,4 +141,18 @@
     color: var(--color-blue-submission);
     font-size: x-small;
     justify-self: center;
+}
+
+.list {
+    background: var(--color-blue-hover);
+    border-radius: 15px;
+    max-height: 180px;
+    height: auto;
+    position: relative;
+    overflow-y: scroll;
+    padding-left: 0;
+}
+
+.list::-webkit-scrollbar {
+    display: none;
 }
