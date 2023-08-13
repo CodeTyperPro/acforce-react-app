@@ -107,7 +107,7 @@ function Notifications() {
   const [error, setError] = useState<Error | null>(null);
   const [isPending, setIsPending] = useState(false);
 
-  let handle: string = "CodeTyper";
+  let handle: string = "tourist";
   let url: string =
     "https://codeforces.com/api/user.status?handle=" +
     handle +
