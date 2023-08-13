@@ -12,10 +12,7 @@ import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Slide from '@mui/material/Slide';
-import { Howl, Howler } from "howler";
-
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
-import { AudioPlayerContext } from "../../components/Audio/AudioPlayerContext";
 
 type LastSubmission = {
   handle: string;

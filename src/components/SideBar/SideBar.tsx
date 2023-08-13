@@ -76,7 +76,7 @@ function SideBar() {
           </Link>
         </div>
         
-        <div className="processing" style={{ opacity: (isPending ? 100 : 0) }}>
+        <div className="processing" style={{ opacity: (true || isPending ? 100 : 0) }}>
             <CircularProgress variant={variant} color="warning">
               <NewReleasesIcon color="error" fontSize="small"/>
             </CircularProgress>
