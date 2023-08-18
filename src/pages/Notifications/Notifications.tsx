@@ -13,6 +13,12 @@ import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
 import Slide from '@mui/material/Slide';
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
+import {Howl, Howler } from "howler";
+import mp3 from '../../sounds/success_sound.mp3';
+
+const my_source_success_1 = "sources/success_sound.mp3";
+const my_source_success_2 = "sources/success_sound.webm";
+const music_url = "https://jesusful.com/wp-content/uploads/music/2021/09/The_Script_-_Hall_of_Fames_(Naijay.com).mp3";
 
 type LastSubmission = {
   handle: string;
@@ -26,7 +32,76 @@ interface State extends SnackbarOrigin {
   open: boolean;
 }
 
+function showNotification(data) {
+  Notification.requestPermission().then((result) => {
+    if (result === "granted") {
+      navigator.serviceWorker.ready.then((registration) => {
+        registration.showNotification("Vibration Sample", {
+          body: "Buzz! Buzz!",
+          icon: "../images/touch/chrome-touch-icon-192x192.png",
+          vibrate: [200, 100, 200, 100, 200, 100, 200],
+          tag: "vibration-sample",
+        });
+      });
+    }
+  });
+}
+
+function notifyMe(data) {
+  let message: string = data.handle + " submitted " + data.problem_name;
+  if (!("Notification" in window)) {
+    // Check if the browser supports notifications
+    alert("This browser does not support desktop notification");
+  } else if (Notification.permission === "granted") {
+    // Check whether notification permissions have already been granted;
+    // if so, create a notification
+    const notification = new Notification(message);
+    // …
+  } else if (Notification.permission !== "denied") {
+    // We need to ask the user for permission
+    Notification.requestPermission().then((permission) => {
+      // If the user accepts, let's create a notification
+      if (permission === "granted") {
+        const notification = new Notification(message);
+        // …
+      }
+    });
+  }
+
+  // At last, if the user has denied notifications, and you
+  // want to be respectful there is no need to bother them anymore.
+} 
+
 function Notifications() {
+    Howler.autoUnlock = false;
+/* 
+    var sound = new Howl({
+      src: [my_source],
+      volume: 0.8,
+      onend: function () {
+        console.log("Finished playing!");
+      },
+      html5: true,
+      onplayerror: function () {
+        sound.once('unlock', function() {
+          sound.play();
+        });
+      }
+    });
+*/
+    const [sound_effect, setSoundEffect] = useState(new Howl({
+      src: [mp3, my_source_success_1, my_source_success_2],
+      volume: 0.8,
+      onend: function () {
+        console.log("Finished playing!");
+      },
+      onplayerror: function () {
+        sound_effect.once('unlock', function() {
+          sound_effect.play();
+        });
+      }
+    }));
+    
    // === Snack Bar notifiaction === //
    const [state, setState] = React.useState<State>({
     open: false,
@@ -195,6 +270,14 @@ function Notifications() {
 
               console.log("Data changed!");
               // Show notification snack-bar
+              Notification.requestPermission();
+              Notification.requestPermission().then((result) => {
+                console.log(result);
+              });
+              
+              showNotification(data);
+              notifyMe(data);
+              sound_effect.play();
             }
           }
         });
@@ -207,9 +290,6 @@ function Notifications() {
       load_submissions();
     });
   }, [lastSub]);
-
- 
-
 
   return (
     <AppContext.Provider
