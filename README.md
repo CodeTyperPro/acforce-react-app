@@ -2,8 +2,10 @@
 
 
 ## Demo Prototype
+![AC Force](https://acforce.netlify.app/)
 
 <!---![Demo](Boop-Kittens.gif) --->
+[![Netlify Status](https://api.netlify.com/api/v1/badges/10f39ed5-7cbe-4eef-a3f3-dae8bd2a9c11/deploy-status)](https://app.netlify.com/sites/acforce/deploys)
 
 ## Screenshots
 

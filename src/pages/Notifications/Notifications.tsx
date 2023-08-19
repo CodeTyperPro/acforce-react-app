@@ -11,14 +11,18 @@ import SkeletonElement from "../Skeletons/SkeletonElement";
 import Box from "@mui/material/Box";
 import Button from "@mui/material/Button";
 import Grid from "@mui/material/Grid";
-import Slide from '@mui/material/Slide';
+import Slide from "@mui/material/Slide";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
-import {Howl, Howler } from "howler";
-import mp3 from '../../sounds/success_sound.mp3';
+import { Howl, Howler } from "howler";
+import mp3_success from "../../sounds/success_sound.mp3";
+import mp3_failure from "../../sounds/failure_sound.mp3";
 
-const my_source_success_1 = "sources/success_sound.mp3";
-const my_source_success_2 = "sources/success_sound.webm";
-const music_url = "https://jesusful.com/wp-content/uploads/music/2021/09/The_Script_-_Hall_of_Fames_(Naijay.com).mp3";
+const my_source_success_1 = "sounds/success_sound.mp3";
+const my_source_success_2 = "sounds/success_sound.webm";
+const my_source_failure_1 = "sounds/failure_sound.mp3";
+const my_source_failure_2 = "sounds/failure_sound.webm";
+const music_url =
+  "https://jesusful.com/wp-content/uploads/music/2021/09/The_Script_-_Hall_of_Fames_(Naijay.com).mp3";
 
 type LastSubmission = {
   handle: string;
@@ -48,62 +52,69 @@ function showNotification(data) {
 }
 
 function notifyMe(data) {
-  let message: string = data.handle + " submitted " + data.problem_name;
+  let message: string =
+    data.handle + " got " + data.verdict + " on " + data.problem_name + ".";
+
+  const options = {
+    body: message,
+    icon: "../../favicon.ico",
+    silent: true,
+  };
+
+  let play: boolean = false;
+
   if (!("Notification" in window)) {
-    // Check if the browser supports notifications
     alert("This browser does not support desktop notification");
   } else if (Notification.permission === "granted") {
-    // Check whether notification permissions have already been granted;
-    // if so, create a notification
-    const notification = new Notification(message);
-    // …
+    play = true;
   } else if (Notification.permission !== "denied") {
-    // We need to ask the user for permission
     Notification.requestPermission().then((permission) => {
-      // If the user accepts, let's create a notification
       if (permission === "granted") {
-        const notification = new Notification(message);
-        // …
+        play = true;
       }
     });
   }
 
-  // At last, if the user has denied notifications, and you
-  // want to be respectful there is no need to bother them anymore.
-} 
+  if (play) {
+    const new_notification = new Notification("AC Force Notification", options);
+  }
+}
 
 function Notifications() {
-    Howler.autoUnlock = false;
-/* 
-    var sound = new Howl({
-      src: [my_source],
-      volume: 0.8,
-      onend: function () {
-        console.log("Finished playing!");
-      },
-      html5: true,
-      onplayerror: function () {
-        sound.once('unlock', function() {
-          sound.play();
-        });
-      }
-    });
-*/
-    const [sound_effect, setSoundEffect] = useState(new Howl({
-      src: [mp3, my_source_success_1, my_source_success_2],
+  Howler.autoUnlock = false;
+
+  const [success_sound_effect, setSuccessSoundEffect] = useState(
+    new Howl({
+      src: [mp3_success, my_source_success_1, my_source_success_2],
       volume: 0.8,
       onend: function () {
         console.log("Finished playing!");
       },
       onplayerror: function () {
-        sound_effect.once('unlock', function() {
-          sound_effect.play();
+        success_sound_effect.once("unlock", function () {
+          success_sound_effect.play();
         });
-      }
-    }));
-    
-   // === Snack Bar notifiaction === //
-   const [state, setState] = React.useState<State>({
+      },
+    })
+  );
+
+  const [failure_sound_effect, setFailureSoundEffect] = useState(
+    new Howl({
+      src: [mp3_failure, my_source_failure_1, my_source_failure_2],
+      volume: 0.8,
+      onend: function () {
+        console.log("Finished playing!");
+      },
+      onplayerror: function () {
+        failure_sound_effect.once("unlock", function () {
+          failure_sound_effect.play();
+        });
+      },
+    })
+  );
+
+  // === Snack Bar notifiaction === //
+  const [state, setState] = React.useState<State>({
     open: false,
     vertical: "top",
     horizontal: "center",
@@ -111,7 +122,6 @@ function Notifications() {
   const { vertical, horizontal, open } = state;
 
   const handleClick = (newState: SnackbarOrigin) => () => {
-    console.log("Great! Got it.")
     setState({ ...newState, open: true });
   };
 
@@ -139,6 +149,15 @@ function Notifications() {
     []
   );
 
+  const [read_friend_submissions, setFriendSubmissions] = useLocalStorage(
+    "friends_submission",
+    "1"
+  );
+  const [read_my_submissions, setMySubmissions] = useLocalStorage(
+    "my_submission",
+    "1"
+  );
+
   // === Fecthing friends === //
   let data_friends = [
     {
@@ -151,7 +170,7 @@ function Notifications() {
 
   // === Using state === //
   const [friends, setFriends] = useLocalStorage("friends", data_friends);
-  const [user, setUser] = useLocalStorage("user", "");
+  const [user, setUser] = useLocalStorage("user", "user");
 
   let urls: string[] = friends
     ?.filter((x) => x.name !== "user")
@@ -165,8 +184,6 @@ function Notifications() {
       return url;
     });
 
-  // console.log(urls);
-
   const [lastSub, setLastSub] = useState<LastSubmission>({
     handle: "",
     problem_name: "",
@@ -179,7 +196,7 @@ function Notifications() {
   const [error, setError] = useState<Error | null>(null);
   const [isPending, setIsPending] = useState(false);
 
-  let handle: string = "tourist";
+  let handle: string = user;
   let url: string =
     "https://codeforces.com/api/user.status?handle=" +
     handle +
@@ -199,6 +216,16 @@ function Notifications() {
     console.log(error);
   }
 
+  // ===
+  function addSubmissionAndNotify(data) {
+    const updatedSubmissions = [data, ...all_submissions];
+    setAllSubmissions(updatedSubmissions);
+    handleClick({ vertical: "bottom", horizontal: "right" });
+
+    const save = JSON.stringify([...updatedSubmissions]);
+    localStorage.setItem("all_submissions", save);
+  }
+
   // === Async === //
   useEffect(() => {
     async function load_submissions() {
@@ -210,7 +237,6 @@ function Notifications() {
 
         const AllData = await axios.all(all_requests);
         AllData.forEach((...AllData) => {
-          console.log("INSIDE SPREAD: ");
           let handler: string =
             AllData[0].data.result[0].author.members[0].handle;
           console.log("Handler: ", handler);
@@ -226,58 +252,42 @@ function Notifications() {
           };
 
           let res: string = "";
-
           switch (data.verdict) {
-            case "TIME_LIMIT_EXCEEDED":
-              res = "TLE";
-              break;
-            case "OK":
-              res = "Accepted";
-              break;
-            case "WRONG_ANSWER":
-              res = "WA";
-              break;
-            case "TESTING":
-              res = "Testing";
-              break;
-            default:
-              res = "WA";
-              console.log(data.verdict);
-              break;
+            case "TIME_LIMIT_EXCEEDED": res = "tle"; break;
+            case "OK": res = "accepted"; break;
+            case "WRONG_ANSWER": res = "wa"; break;
+            case "TESTING": res = "testing"; break;
+            default: res = "wa"; break;
           }
 
           data.verdict = res;
-
-          if (res === "Testing") {
+          if (res === "testing") {
             setIsPending(true);
           } else {
             console.log(data);
             if (
               !myMap.has(handler) ||
-              myMap.get(handler)?.problem_name !== data.problem_name
+              (myMap.get(handler)?.problem_name !== data.problem_name &&
+                myMap.get(handler)?.verdict === data.verdict)
             ) {
-              handleClick({ vertical: "bottom", horizontal: "right" })
-
-              let old: LastSubmission[] = all_submissions;
-              old.push(data);
-              setAllSubmissions(old);
+              addSubmissionAndNotify(data);
 
               myMap.set(handler, data);
               const mapJson = JSON.stringify([...myMap]);
               localStorage.setItem("recent_notification", mapJson);
 
-              setLastSub(data);
+              if (data.handle === user) {
+                setLastSub(data);
+              }
 
-              console.log("Data changed!");
-              // Show notification snack-bar
-              Notification.requestPermission();
-              Notification.requestPermission().then((result) => {
-                console.log(result);
-              });
-              
               showNotification(data);
               notifyMe(data);
-              sound_effect.play();
+
+              if (data.verdict === "accepted") {
+                success_sound_effect.play();
+              } else {
+                failure_sound_effect.play();
+              }
             }
           }
         });
@@ -288,8 +298,8 @@ function Notifications() {
 
     setTimeout(() => {
       load_submissions();
-    });
-  }, [lastSub]);
+    }, 2000);
+  }, [all_submissions]);
 
   return (
     <AppContext.Provider
@@ -300,6 +310,12 @@ function Notifications() {
         setLastSub,
         isPending,
         setIsPending,
+        read_friend_submissions,
+        read_my_submissions,
+        setFriendSubmissions,
+        setMySubmissions,
+        user,
+        setUser,
       }}
     >
       <Box sx={{ width: 500 }}>
@@ -309,12 +325,12 @@ function Notifications() {
           onClose={handleClose}
           message="I love snacks"
           key={vertical + horizontal}
-          TransitionComponent={TransitionRight} 
+          TransitionComponent={TransitionRight}
         >
           <div className="snack-notify">
             <div className="left">
               <div className="problem">
-                <span onChange={ handleClick({ vertical: "bottom", horizontal: "right" }) }>{lastSub.problem_name}</span>
+                <span>{lastSub.problem_name}</span>
               </div>
               <div className="time-sub">
                 <div>
@@ -322,19 +338,16 @@ function Notifications() {
                 </div>
               </div>
             </div>
-            <div className={ lastSub.verdict === "WA" ? "wa" : "accepted" }>
+            <div className={lastSub.verdict === "wa" ? "wa" : "accepted"}>
               <span>
-                {lastSub.verdict === "WA" ? "wrong answer" : "accepted"}
+                {lastSub.verdict === "wa" ? "wrong answer" : "accepted"}
               </span>
             </div>
           </div>
         </Snackbar>
       </Box>
 
-      <div
-        className="notifications"
-        onClick={handleClick({ vertical: "bottom", horizontal: "right" })}
-      >
+      <div className="notifications">
         <div className="title">
           <span>Recent notifications</span>
         </div>

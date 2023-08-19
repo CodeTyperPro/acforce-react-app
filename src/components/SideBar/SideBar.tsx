@@ -6,7 +6,6 @@ import NotificationsNoneIcon from '@mui/icons-material/NotificationsNone';
 import ThumbsUpDownIcon from '@mui/icons-material/ThumbsUpDown';
 import CircularProgress from "@mui/joy/CircularProgress";
 import NewReleasesIcon from '@mui/icons-material/NewReleases';
-import CreateSvgIcon from "../CreateSvgIcon";
 import { useLocalStorage } from "../../pages/useLocalStorage";
 import { AppContext } from "../../Helper/Context";
 import { useContext } from "react";
@@ -15,27 +14,30 @@ import { VariantProp } from "@mui/joy";
 
 
 function SideBar() {
-  const [user, setUser] = useLocalStorage('user', '');
+  const [user, setUser] = useLocalStorage('user', 'user');
   const handleChangeUser = (e: any) => {
     let x: string = e.target.value;
-    console.log(x);
     setUser(x);
   };
 
   const [variant, setVariant] = React.useState<VariantProp>('solid');
-  
+
+  let handle: string = user;
+  let url: string =
+    "https://codeforces.com/api/user.status?handle=" +
+    handle +
+    "&from=1&count=2";
+
   // === Async === //
   const [isPending, setIsPending] = useState(false); // Change to true to see the changes in the main screen
   useEffect(() => {
     async function fetchData() {
-        // try catch
-
+        // try ... catch
         try { 
           const response = await axios.get(url);
           const root = response.data.result["0"];
 
           let result: string = root.verdict;
-
           if (result === "TESTING") {
             setIsPending(true);
           } else {
@@ -60,7 +62,7 @@ function SideBar() {
             width={75}
             height={75}
           />
-            <input className="input-user" type="text" placeholder="User" value={ user } required onChange={ handleChangeUser } />
+            <input className="input-user" type="text" value={ user }  placeholder="User" required onChange={ handleChangeUser } />
         </div>
 
         <hr className="hrbefore" />

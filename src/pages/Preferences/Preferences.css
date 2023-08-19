@@ -208,6 +208,7 @@
 
 .duration-bottom input{
   color: #959595;
+  width: 5rem;
 
   &::placeholder {
     color: #959595;

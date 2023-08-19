@@ -1,33 +1,21 @@
 import React from "react";
-import { useEffect, useState } from "react";
-import axios from "axios";
-import { type } from "@testing-library/user-event/dist/type";
-import { useLocalStorage } from "../useLocalStorage";
-import { parse } from "path";
 import { useContext } from "react";
 import { AppContext } from "../../Helper/Context";
 import SkeletonElement from "../Skeletons/SkeletonElement";
 
-type LastSubmission = {
-  handle: string;
-  problem_name: string;
-  date: string;
-  link: string;
-  verdict: string;
-};
-
 function CardNotification() {
   const { lastSub, setLastSub } = useContext(AppContext);
-  // console.log("Prop card: ", lastSub);
+  
   return (
     <>
+        <SkeletonElement />
       <div className="left">
         <div className="problem">
-          <span>{ lastSub.problem_name || <SkeletonElement /> }</span>
+          <span>{ lastSub.problem_name }</span>
         </div>
         <div className="time-sub">
           <div>
-            <span>{ lastSub.date || <SkeletonElement />}</span>
+            <span>{ lastSub.date}</span>
           </div>
 
           <div>

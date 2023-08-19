@@ -14,16 +14,33 @@ type LastSubmission = {
   verdict: string;
 };
 
-function NotificationList(props: any) {
-  // console.log("Props: ", props);
-  const [data, setData] = useState(props);
+function load_submissions() {
+  try {
+    const storedJsonString = localStorage.getItem("all_submissions");
+    if (storedJsonString) {
+      const parsedArray: LastSubmission[] = JSON.parse(storedJsonString);
+      setAllSubmissions(parsedArray);
+    }
+  } catch (error) {
+    console.log(error);
+  }
+}
+
+function NotificationList() {
   const { all_submissions, setAllSubmissions } = useContext(AppContext);
+  const { read_friend_submissions, setFriendSubmissions } = useContext(AppContext);
+  const { read_my_submissions, setMySubmissions } = useContext(AppContext);
+  const { user, setUser } = useContext(AppContext);
+
+  load_submissions();
 
   return (
     <>
       <div className="list">
         {all_submissions &&
-          all_submissions.map((data) => (
+          all_submissions // Read according to the settings.
+          .filter((data) => (data.handle === user && read_my_submissions === "1") || (data.handle !== user && read_friend_submissions === "1"))
+          .map((data) => (
             <div className="item">
               <div className="left-user">
                 <span>{data.handle}</span>
@@ -47,11 +64,10 @@ function NotificationList(props: any) {
 
                 <div
                   className={
-                    (data.verdict === "WA" ? "wa" : "accepted") ||
-                    "Waiting ..."
+                    (data.verdict === "wa" ? "wa" : "accepted") || "Waiting ..."
                   }
                 >
-                  <span>{data.verdict === "WA" ? "wa" : "accepted"}</span>
+                  <span>{data.verdict === "wa" ? "wa" : "accepted"}</span>
                 </div>
               </div>
             </div>

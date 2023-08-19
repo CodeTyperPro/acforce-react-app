@@ -29,7 +29,7 @@ function Preferences() {
   const [duration, setDuration] = useLocalStorage('duration', 30);
   const handleChangeDuration = (e: any) => {
     let x: number = +e.target.value;
-    console.log(x);
+    // console.log(x);
     if (x === 0) {
       e.preventDefault();
       e.target.value = duration;
@@ -38,14 +38,14 @@ function Preferences() {
     }
   };
 
-  const [my_submission, setMySubmission] = useLocalStorage('my_submission', "0");
+  const [my_submission, setMySubmission] = useLocalStorage('my_submission', "1");
   const handleClickMySubmission = (e: any) => {
     let x = e.target.checked;
     setMySubmission(x ? "1" : "0");
-    console.log(x);
+    // console.log(x);
   };
 
-  const [friends_submission, setFriendsSubmission] = useLocalStorage('friends_submission', "0");
+  const [friends_submission, setFriendsSubmission] = useLocalStorage('friends_submission', "1");
   const handleClickFriendsSubmission = (e: any) => {
     let x = e.target.checked;
     setFriendsSubmission(x ? "1" : "0");
