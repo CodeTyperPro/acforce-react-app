@@ -1,18 +1,32 @@
 import React from "react";
-import "./Notifications.css";
+import axios from "axios";
 import CardNotification from "./CardNotification";
 import NotificationList from "../NotificationList/NotificationList";
 import { useLocalStorage } from "../useLocalStorage";
 import { useEffect, useState } from "react";
-import axios from "axios";
-import { AppContext } from "../../Helper/Context";
-import "../Skeletons/Skeleton.css";
+import { AppContext } from "../../helper/Context";
 import Box from "@mui/material/Box";
 import Slide from "@mui/material/Slide";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
 import { Howl, Howler } from "howler";
 import mp3_success from "../../sounds/success_sound.mp3";
 import mp3_failure from "../../sounds/failure_sound.mp3";
+import "../Skeletons/Skeleton.css";
+import "./Notifications.css";
+
+const root_path = "sounds/"
+const tracks = [
+  {
+    id: 1,
+    title: "Success",
+    src: [root_path + "success_sound.mp3", root_path + "success_sound.webm"],
+  },
+  {
+    id: 2,
+    title: "Failure",
+    src: [root_path + "failure_sound.mp3", root_path + "failure_sound.webm"],
+  }
+];
 
 const my_source_success_1 = "sounds/success_sound.mp3";
 const my_source_success_2 = "sounds/success_sound.webm";
@@ -33,37 +47,51 @@ interface State extends SnackbarOrigin {
   open: boolean;
 }
 
-function notifyMe(data) {
-  let message: string =
-    data.handle + " got " + data.verdict + " on " + data.problem_name + ".";
-
-  const options = {
-    body: message,
-    icon: "../../favicon.ico",
-    silent: true,
-  };
-
-  let play: boolean = false;
-
-  if (!("Notification" in window)) {
-    alert("This browser does not support desktop notification");
-  } else if (Notification.permission === "granted") {
-    play = true;
-  } else if (Notification.permission !== "denied") {
-    Notification.requestPermission().then((permission) => {
-      if (permission === "granted") {
-        play = true;
-      }
-    });
-  }
-
-  if (play) {
-    const new_notification = new Notification("AC Force Notification", options);
-  }
-}
-
 function Notifications() {
   Howler.autoUnlock = false;
+
+  // const queue: Howler[] = [];
+  const [queue, setQueue] = useState([]);
+
+  function notifyMe(data) {
+    let message: string =
+      data.handle + " got " + data.verdict + " on " + data.problem_name + ".";
+
+    const options = {
+      body: message,
+      icon: "../../favicon.ico",
+      silent: true,
+    };
+
+    let play: boolean = false;
+
+    if (!("Notification" in window)) {
+      alert("This browser does not support desktop notification");
+    } else if (Notification.permission === "granted") {
+      play = true;
+    } else if (Notification.permission !== "denied") {
+      Notification.requestPermission().then((permission) => {
+        if (permission === "granted") {
+          play = true;
+        }
+      });
+    }
+
+    if (play) {
+      const new_notification = new Notification(
+        "AC Force Notification",
+        options
+      );
+
+      if (data.verdict === "accepted") {
+        // success_sound_effect.play();
+        queue.push(success_sound_effect);
+      } else {
+        // failure_sound_effect.play();
+        queue.push(failure_sound_effect);
+      }
+    }
+  }
 
   const [volume, setVolume] = useLocalStorage("volume", 80);
 
@@ -96,6 +124,13 @@ function Notifications() {
       },
     })
   );
+
+  useEffect(() => {
+    if (queue.length > 0 && !Howler.isPlaying()) {
+      let ringtone: Howler = queue.shift();
+      ringtone.play();
+    }
+  }, [queue]);
 
   // === Snack Bar notifiaction === //
   const [state, setState] = React.useState<State>({
@@ -156,7 +191,8 @@ function Notifications() {
   const [friends, setFriends] = useLocalStorage("friends", data_friends);
   const [user, setUser] = useLocalStorage("user", "user");
 
-  let urls: string[] = friends
+  let urls: string[] = friends;
+  urls = urls
     ?.filter((x) => x.name !== "user")
     .map((x) => {
       let handle: string = x.name;
@@ -167,25 +203,27 @@ function Notifications() {
       return url;
     });
 
+  const add_user = {
+    handle: user,
+    url:
+      "https://codeforces.com/api/user.status?handle=" +
+      user +
+      "&from=1&count=2",
+  };
+
+  urls.push(add_user);
+
   const [lastSub, setLastSub] = useLocalStorage("last_submission", {
     handle: "",
     problem_name: "",
     date: "",
     link: "#",
-    verdict: ""
+    verdict: "",
   });
 
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<Error | null>(null);
   const [isPending, setIsPending] = useState(false);
-
-  let handle: string = user;
-  let url: string =
-    "https://codeforces.com/api/user.status?handle=" +
-    handle +
-    "&from=1&count=2";
-
-  urls.push(url);
 
   // === Map === //
   try {
@@ -197,9 +235,8 @@ function Notifications() {
 
       if (myMap.get(user)) {
         let last_copy: LastSubmission = myMap.get(user);
-        setLastSub(JSON.parse(last_copy));        
+        setLastSub(JSON.parse(last_copy));
       }
-
     }
   } catch (error) {
     console.log(error);
@@ -217,6 +254,8 @@ function Notifications() {
   // === Async === //
   useEffect(() => {
     async function load_submissions() {
+      if (urls.length === 0) return;
+
       try {
         const all_requests = urls.map((x) => {
           const req = axios.get(x);
@@ -225,14 +264,20 @@ function Notifications() {
 
         const AllData = await axios.all(all_requests);
         AllData.forEach((...AllData) => {
-          let handler: string =
+          if (!AllData[0].data.result[0]) {
+            return;
+          }
+
+          if (urls.length === 0) return;
+
+          let handle: string =
             AllData[0].data.result[0].author.members[0].handle;
-          console.log("Handler: ", handler);
+          console.log("Handle: ", handle);
 
           const root = AllData[0].data.result[0];
 
           const data: LastSubmission = {
-            handle: handler,
+            handle: handle,
             problem_name: root.problem.name,
             date: new Date(root.creationTimeSeconds * 1000).toLocaleString(),
             link: `https://codeforces.com/contest/${root.contestId}/submission/${root.id}`,
@@ -262,7 +307,6 @@ function Notifications() {
           if (res === "testing") {
             setIsPending(true);
           } else {
-            // console.log(data);
             if (
               !myMap.has(handler) ||
               (myMap.get(handler)?.problem_name !== data.problem_name &&
@@ -278,46 +322,33 @@ function Notifications() {
               console.log("Handle: ", data.handle);
 
               if (data.handle.toLowerCase() === user?.toLowerCase()) {
-                // setLastSub(data);
                 setLastSub(data);
                 console.log("Got It!");
               }
 
               notifyMe(data);
-
-              if (data.verdict === "accepted") {
-                success_sound_effect.play();
-              } else {
-                failure_sound_effect.play();
-              }
             }
           }
-
         });
       } catch (err) {
-        console.log(err);
+        // console.log(err);
       }
     }
 
     setTimeout(() => {
       load_submissions();
-    }, 2000);
+    }, 3000);
   }, [all_submissions]);
 
   return (
     <AppContext.Provider
       value={{
         all_submissions,
-        setAllSubmissions,
         lastSub,
         isPending,
-        setIsPending,
         read_friend_submissions,
         read_my_submissions,
-        setFriendSubmissions,
-        setMySubmissions,
         user,
-        setUser,
       }}
     >
       <Box sx={{ width: 500 }}>

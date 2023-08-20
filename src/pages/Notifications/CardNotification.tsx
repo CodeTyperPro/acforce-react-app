@@ -1,6 +1,6 @@
 import React from "react";
 import { useContext } from "react";
-import { AppContext } from "../../Helper/Context";
+import { AppContext } from "../../helper/Context";
 import SkeletonElement from "../Skeletons/SkeletonElement";
 
 function CardNotification() {

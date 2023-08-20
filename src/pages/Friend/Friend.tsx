@@ -10,12 +10,10 @@ type PrettyProps = {
 }
 
 const Friend = (props: PrettyProps) => {
-  // console.log(props);
-
   return (
     <div className="friend">
         <div className="friend-name">
-            <span>{ props.name}</span>
+            <span>{ props.name }</span>
         </div>
         <div className="close-icon" onClick={() => props.handleDelete(props.id)}>
             <CloseIcon fontSize="small"/>

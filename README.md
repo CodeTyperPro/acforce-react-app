@@ -15,7 +15,7 @@
 ![Recent notification](screenshots/recent_notifications.png)
 
 ## Features
-
+Clear the storage by adding a new friend called `clear`.
 
 ## Installation and Usage
 

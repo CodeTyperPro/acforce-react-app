@@ -1,39 +1,14 @@
 import React, { useContext } from "react";
-import { useState } from "react";
-import { useEffect } from "react";
 import "./NotificationList.css";
 import "../Skeletons/Skeleton.css";
 import SkeletonElement from "../Skeletons/SkeletonElement";
-import { AppContext } from "../../Helper/Context";
-
-type LastSubmission = {
-  handle: string;
-  problem_name: string;
-  date: string;
-  link: string;
-  verdict: string;
-};
-
-function load_submissions() {
-  try {
-    const storedJsonString = localStorage.getItem("all_submissions");
-    if (storedJsonString) {
-      const parsedArray: LastSubmission[] = JSON.parse(storedJsonString);
-      setAllSubmissions(parsedArray);
-    }
-  } catch (error) {
-    console.log(error);
-  }
-}
+import { AppContext } from "../../helper/Context";
 
 function NotificationList() {
-  const { all_submissions, setAllSubmissions } = useContext(AppContext);
-  const { read_friend_submissions, setFriendSubmissions } =
-    useContext(AppContext);
-  const { read_my_submissions, setMySubmissions } = useContext(AppContext);
-  const { user, setUser } = useContext(AppContext);
-
-  // load_submissions();
+  const { all_submissions } = useContext(AppContext);
+  const { read_friend_submissions } = useContext(AppContext);
+  const { read_my_submissions } = useContext(AppContext);
+  const { user } = useContext(AppContext);
 
   return (
     <>
@@ -45,8 +20,9 @@ function NotificationList() {
                 (data.handle === user && read_my_submissions === "1") ||
                 (data.handle !== user && read_friend_submissions === "1")
             )
-            .map((data) => (
-              <div className="item">
+            .map((data, index) => (
+              
+              <div className="item" key={index}>
                 <div className="left-user">
                   <span>{data.handle}</span>
                 </div>

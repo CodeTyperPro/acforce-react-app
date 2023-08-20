@@ -37,6 +37,8 @@
 .friend span {
   text-align: center;
   font-size: small;
+  color:#7a7a7a;
+  font-weight: 600;
 }
 
 .new-friend {
@@ -58,7 +60,7 @@
   align-items: center;
   align-self: center;
   border: none;
-  color: var(--color-grey-friend-placeholder);
+  color: #979797;
   font-weight: 700;
   line-height: normal;
   font-size: 0.8rem;

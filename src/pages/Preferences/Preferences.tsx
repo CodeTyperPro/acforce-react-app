@@ -8,7 +8,6 @@ import VolumeUp from "@mui/icons-material/VolumeUp";
 import Stack from "@mui/material/Stack";
 import NewFriend from "../Friend/NewFriend";
 import Friend from "../Friend/Friend";
-import { useState, useEffect } from "react";
 import { useLocalStorage } from "../useLocalStorage";
 
 export interface Friends {
@@ -18,15 +17,15 @@ export interface Friends {
 function Preferences() {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
-  const [volume, setVolume] = useLocalStorage('volume', 80);
+  const [volume, setVolume] = useLocalStorage("volume", 80);
   const handleChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
 
-  const [duration, setDuration] = useLocalStorage('duration', 30);
+  const [duration, setDuration] = useLocalStorage("duration", 30);
   const handleChangeDuration = (e: any) => {
     let x: number = +e.target.value;
-    // console.log(x);
+
     if (x === 0) {
       e.preventDefault();
       e.target.value = duration;
@@ -35,40 +34,41 @@ function Preferences() {
     }
   };
 
-  const [my_submission, setMySubmission] = useLocalStorage('my_submission', "1");
+  const [my_submission, setMySubmission] = useLocalStorage(
+    "my_submission",
+    "1"
+  );
   const handleClickMySubmission = (e: any) => {
     let x = e.target.checked;
     setMySubmission(x ? "1" : "0");
-    // console.log(x);
   };
 
-  const [friends_submission, setFriendsSubmission] = useLocalStorage('friends_submission', "1");
+  const [friends_submission, setFriendsSubmission] = useLocalStorage(
+    "friends_submission",
+    "1"
+  );
   const handleClickFriendsSubmission = (e: any) => {
     let x = e.target.checked;
     setFriendsSubmission(x ? "1" : "0");
-    console.log(x);
   };
 
-  const [sound_effect, setSoundEffect] = useLocalStorage('sound_effect', "Hall of Fame - The Script");
-  const handleSoundEffect= (e: any) => {
+  const [sound_effect, setSoundEffect] = useLocalStorage(
+    "sound_effect",
+    "Hall of Fame - The Script"
+  );
+  const handleSoundEffect = (e: any) => {
     let x = e.target.value || "Hall of Fame - The Script";
-    console.log(x);
     setSoundEffect(x);
   };
 
-  // === RETRIEVE DATA === //
-  let data_friends = [{
-      id: 0,
-      name: "user"
-    }
-  ];
-
   // === Using state === //
-  const [friends, setFriends] = useLocalStorage('friends', data_friends);
+  const [friends, setFriends] = useLocalStorage("friends", [{
+    id: 0,
+    name: "user",
+  }]);
 
   // === Delete === //
   const handleDelete = (id: number) => {
-
     if (friends === undefined || friends === null) {
       return;
     }
@@ -82,21 +82,31 @@ function Preferences() {
     if (friends === undefined || friends === null) {
       return;
     }
-  
+    
+    // Command to clear the storage:
+    if (name === "clear") {
+      localStorage.clear();
+      window.location.reload(false);
+      return;
+    }
+
     const new_friends = friends || [];
-  
-    const maxId = new_friends.reduce((max, friend) => Math.max(max, friend.id), -1);
+
+    const maxId = new_friends.reduce(
+      (max, friend) => Math.max(max, friend.id),
+      -1
+    );
     const new_id = maxId + 1;
-  
+
     const new_obj = {
       id: new_id,
       name: name,
     };
-  
+
     const add = [new_obj, ...friends]; // Create a new array with the added friend
     setFriends(add);
   };
-  
+
   return (
     <div className="preferences">
       <div className="title">
@@ -108,15 +118,14 @@ function Preferences() {
           <span>Friends' Ids</span>
         </div>
         <div className="friends-list">
-          {
-            <NewFriend handleAdd={handleAdd} />
-          }
+          {<NewFriend key={0} handleAdd={handleAdd} />}
 
-          { 
-            friends &&  friends.map((x) => (
-              x.id !== 0 && <Friend id={x.id} name={x.name} handleDelete={handleDelete} />
-            ))
-          }
+          {friends &&
+            friends
+              .filter((x) => x.id !== 0)
+              .map((x) => (
+                <Friend key={x.id} id={x.id} name={x.name} handleDelete={handleDelete} />
+              ))}
         </div>
       </div>
 
@@ -126,11 +135,21 @@ function Preferences() {
         </div>
         <div className="items-sub">
           <div className="my-sub">
-            <Checkbox value="my_submissions" {...label} checked={my_submission === "1"  ? true : false} onChange={ handleClickMySubmission }/>
+            <Checkbox
+              value="my_submissions"
+              {...label}
+              checked={my_submission === "1"}
+              onChange={handleClickMySubmission}
+            />
             <span>My submissions</span>
           </div>
           <div className="friends-sub">
-            <Checkbox value="friends_submission" {...label} checked={friends_submission === "1" ? true : false} onClick={ handleClickFriendsSubmission }/>
+            <Checkbox
+              value="friends_submission"
+              {...label}
+              checked={friends_submission === "1"}
+              onClick={handleClickFriendsSubmission}
+            />
             <span>Friends submissions</span>
           </div>
         </div>
@@ -141,13 +160,21 @@ function Preferences() {
           <span>Sound effect</span>
         </div>
 
-        <div className="attach" >
+        <div className="attach">
           <div className="attached-ringtone">
-            <span>{ sound_effect?.substring(0, 30) + " ..." || "Hall of Fame - The Script"}</span>
+            <span>
+              {sound_effect?.substring(0, 30) + " ..." ||
+                "Hall of Fame - The Script"}
+            </span>
           </div>
           <div className="input-file">
             <span>Attach ringtone</span>
-            <input readOnly type="file" accept=".mp3, .wav, .m4a, .ogg" onChange={handleSoundEffect}/>
+            <input
+              readOnly
+              type="file"
+              accept=".mp3, .wav, .m4a, .ogg"
+              onChange={handleSoundEffect}
+            />
           </div>
         </div>
       </div>
@@ -165,7 +192,7 @@ function Preferences() {
               max={90}
               placeholder={duration?.toString() || "30"}
               inputMode="numeric"
-              onChange={ handleChangeDuration }
+              onChange={handleChangeDuration}
               readOnly
             ></input>
           </div>

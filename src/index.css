@@ -156,7 +156,7 @@ code {
   margin-right: 10px;
 }
 
-.sidebar a{
+.sidebar .links a{
   text-decoration: none;
   display: flex;
   flex-direction: row;
@@ -208,6 +208,15 @@ code {
 .sidebar .feedback br{
   display: block;
   margin: 10px 0px;
+}
+
+.sidebar .feedback {
+  display: flex;
+  justify-content: center;
+  justify-self: center;
+  align-items: center;
+  align-self: center;
+  align-content: center;
 }
 
 .sidebar .feedback .icon{
