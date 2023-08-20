@@ -11,6 +11,7 @@ import { AppContext } from "../../Helper/Context";
 import { useContext } from "react";
 import { useEffect, useState } from "react";
 import { VariantProp } from "@mui/joy";
+import axios from "axios";
 
 
 function SideBar() {
@@ -37,8 +38,10 @@ function SideBar() {
           const response = await axios.get(url);
           const root = response.data.result["0"];
 
+          // console.log("Response: ", response);
+
           let result: string = root.verdict;
-          if (result === "TESTING") {
+          if (response.status === 200) {
             setIsPending(true);
           } else {
             setIsPending(false);
@@ -50,7 +53,6 @@ function SideBar() {
 
     fetchData();
   }, [isPending])
-
 
   return (
     <>
@@ -78,7 +80,7 @@ function SideBar() {
           </Link>
         </div>
         
-        <div className="processing" style={{ opacity: (true || isPending ? 100 : 0) }}>
+        <div className="processing" style={{ opacity: (isPending ? 100 : 0) }}>
             <CircularProgress variant={variant} color="warning">
               <NewReleasesIcon color="error" fontSize="small"/>
             </CircularProgress>

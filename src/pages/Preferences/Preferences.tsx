@@ -8,10 +8,7 @@ import VolumeUp from "@mui/icons-material/VolumeUp";
 import Stack from "@mui/material/Stack";
 import NewFriend from "../Friend/NewFriend";
 import Friend from "../Friend/Friend";
-import { useState, useEffect, useReducer } from "react";
-import { useParams } from "react-router-dom";
-import { Server } from "http";
-import useFetch from "../Friend/useFetch";
+import { useState, useEffect } from "react";
 import { useLocalStorage } from "../useLocalStorage";
 
 export interface Friends {
@@ -21,7 +18,7 @@ export interface Friends {
 function Preferences() {
   const label = { inputProps: { "aria-label": "Checkbox demo" } };
 
-  const [volume, setVolume] = useLocalStorage('volume', 50);
+  const [volume, setVolume] = useLocalStorage('volume', 80);
   const handleChange = (event: Event, newValue: number | number[]) => {
     setVolume(newValue as number);
   };
@@ -68,7 +65,6 @@ function Preferences() {
 
   // === Using state === //
   const [friends, setFriends] = useLocalStorage('friends', data_friends);
-  const [name, setFriendName] = useState("");
 
   // === Delete === //
   const handleDelete = (id: number) => {
@@ -86,24 +82,21 @@ function Preferences() {
     if (friends === undefined || friends === null) {
       return;
     }
-
-    let new_friends = friends || [];
-
-    const len: number = new_friends.length;
-    const last_id: number = len > 0 ? new_friends[len - 1].id + 1 : 0;
-
+  
+    const new_friends = friends || [];
+  
+    const maxId = new_friends.reduce((max, friend) => Math.max(max, friend.id), -1);
+    const new_id = maxId + 1;
+  
     const new_obj = {
-      id: last_id,
+      id: new_id,
       name: name,
     };
-
-    const add = [...friends, new_obj]; // Create a new array with the added friend
+  
+    const add = [new_obj, ...friends]; // Create a new array with the added friend
     setFriends(add);
   };
-
-  const data = useFetch("http://localhost:8000/friends");
-  //console.log(data);
-
+  
   return (
     <div className="preferences">
       <div className="title">
@@ -133,11 +126,11 @@ function Preferences() {
         </div>
         <div className="items-sub">
           <div className="my-sub">
-            <Checkbox value="my_submissions" {...label} checked={my_submission === "1"  ? true : false} defaultChecked onChange={ handleClickMySubmission }/>
+            <Checkbox value="my_submissions" {...label} checked={my_submission === "1"  ? true : false} onChange={ handleClickMySubmission }/>
             <span>My submissions</span>
           </div>
           <div className="friends-sub">
-            <Checkbox value="friends_submission" {...label} checked={friends_submission === "1" ? true : false} defaultChecked onClick={ handleClickFriendsSubmission }/>
+            <Checkbox value="friends_submission" {...label} checked={friends_submission === "1" ? true : false} onClick={ handleClickFriendsSubmission }/>
             <span>Friends submissions</span>
           </div>
         </div>
@@ -148,13 +141,13 @@ function Preferences() {
           <span>Sound effect</span>
         </div>
 
-        <div className="attach">
+        <div className="attach" >
           <div className="attached-ringtone">
             <span>{ sound_effect?.substring(0, 30) + " ..." || "Hall of Fame - The Script"}</span>
           </div>
           <div className="input-file">
             <span>Attach ringtone</span>
-            <input type="file" accept=".mp3, .wav, .m4a, .ogg" onChange={handleSoundEffect}/>
+            <input readOnly type="file" accept=".mp3, .wav, .m4a, .ogg" onChange={handleSoundEffect}/>
           </div>
         </div>
       </div>
@@ -173,6 +166,7 @@ function Preferences() {
               placeholder={duration?.toString() || "30"}
               inputMode="numeric"
               onChange={ handleChangeDuration }
+              readOnly
             ></input>
           </div>
         </div>

@@ -94,6 +94,8 @@
   flex-direction: row;
   border: 2px dashed var(--color-blue-submission);
   padding: 5px;
+  cursor: not-allowed;
+  background-color: #f5f5f5;
 }
 
 .attach .attached-ringtone {

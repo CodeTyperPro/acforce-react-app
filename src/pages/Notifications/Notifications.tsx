@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React from "react";
 import "./Notifications.css";
 import CardNotification from "./CardNotification";
 import NotificationList from "../NotificationList/NotificationList";
@@ -7,10 +7,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { AppContext } from "../../Helper/Context";
 import "../Skeletons/Skeleton.css";
-import SkeletonElement from "../Skeletons/SkeletonElement";
 import Box from "@mui/material/Box";
-import Button from "@mui/material/Button";
-import Grid from "@mui/material/Grid";
 import Slide from "@mui/material/Slide";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
 import { Howl, Howler } from "howler";
@@ -34,21 +31,6 @@ type LastSubmission = {
 
 interface State extends SnackbarOrigin {
   open: boolean;
-}
-
-function showNotification(data) {
-  Notification.requestPermission().then((result) => {
-    if (result === "granted") {
-      navigator.serviceWorker.ready.then((registration) => {
-        registration.showNotification("Vibration Sample", {
-          body: "Buzz! Buzz!",
-          icon: "../images/touch/chrome-touch-icon-192x192.png",
-          vibrate: [200, 100, 200, 100, 200, 100, 200],
-          tag: "vibration-sample",
-        });
-      });
-    }
-  });
 }
 
 function notifyMe(data) {
@@ -83,10 +65,12 @@ function notifyMe(data) {
 function Notifications() {
   Howler.autoUnlock = false;
 
+  const [volume, setVolume] = useLocalStorage("volume", 80);
+
   const [success_sound_effect, setSuccessSoundEffect] = useState(
     new Howl({
       src: [mp3_success, my_source_success_1, my_source_success_2],
-      volume: 0.8,
+      volume: volume / 100.0,
       onend: function () {
         console.log("Finished playing!");
       },
@@ -101,7 +85,7 @@ function Notifications() {
   const [failure_sound_effect, setFailureSoundEffect] = useState(
     new Howl({
       src: [mp3_failure, my_source_failure_1, my_source_failure_2],
-      volume: 0.8,
+      volume: volume / 100.0,
       onend: function () {
         console.log("Finished playing!");
       },
@@ -180,16 +164,15 @@ function Notifications() {
         "https://codeforces.com/api/user.status?handle=" +
         handle +
         "&from=1&count=2";
-
       return url;
     });
 
-  const [lastSub, setLastSub] = useState<LastSubmission>({
+  const [lastSub, setLastSub] = useLocalStorage("last_submission", {
     handle: "",
     problem_name: "",
     date: "",
     link: "#",
-    verdict: "",
+    verdict: ""
   });
 
   const [isFetching, setIsFetching] = useState(true);
@@ -211,6 +194,12 @@ function Notifications() {
       const parsedArray: [string, LastSubmission][] =
         JSON.parse(storedJsonString);
       myMap = new Map<string, LastSubmission>(parsedArray);
+
+      if (myMap.get(user)) {
+        let last_copy: LastSubmission = myMap.get(user);
+        setLastSub(JSON.parse(last_copy));        
+      }
+
     }
   } catch (error) {
     console.log(error);
@@ -221,7 +210,6 @@ function Notifications() {
     const updatedSubmissions = [data, ...all_submissions];
     setAllSubmissions(updatedSubmissions);
     handleClick({ vertical: "bottom", horizontal: "right" });
-
     const save = JSON.stringify([...updatedSubmissions]);
     localStorage.setItem("all_submissions", save);
   }
@@ -253,18 +241,28 @@ function Notifications() {
 
           let res: string = "";
           switch (data.verdict) {
-            case "TIME_LIMIT_EXCEEDED": res = "tle"; break;
-            case "OK": res = "accepted"; break;
-            case "WRONG_ANSWER": res = "wa"; break;
-            case "TESTING": res = "testing"; break;
-            default: res = "wa"; break;
+            case "TIME_LIMIT_EXCEEDED":
+              res = "tle";
+              break;
+            case "OK":
+              res = "accepted";
+              break;
+            case "WRONG_ANSWER":
+              res = "wa";
+              break;
+            case "TESTING":
+              res = "testing";
+              break;
+            default:
+              res = "wa";
+              break;
           }
 
           data.verdict = res;
           if (res === "testing") {
             setIsPending(true);
           } else {
-            console.log(data);
+            // console.log(data);
             if (
               !myMap.has(handler) ||
               (myMap.get(handler)?.problem_name !== data.problem_name &&
@@ -276,11 +274,15 @@ function Notifications() {
               const mapJson = JSON.stringify([...myMap]);
               localStorage.setItem("recent_notification", mapJson);
 
-              if (data.handle === user) {
+              console.log("User: ", user);
+              console.log("Handle: ", data.handle);
+
+              if (data.handle.toLowerCase() === user?.toLowerCase()) {
+                // setLastSub(data);
                 setLastSub(data);
+                console.log("Got It!");
               }
 
-              showNotification(data);
               notifyMe(data);
 
               if (data.verdict === "accepted") {
@@ -290,6 +292,7 @@ function Notifications() {
               }
             }
           }
+
         });
       } catch (err) {
         console.log(err);
@@ -307,7 +310,6 @@ function Notifications() {
         all_submissions,
         setAllSubmissions,
         lastSub,
-        setLastSub,
         isPending,
         setIsPending,
         read_friend_submissions,

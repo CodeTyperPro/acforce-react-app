@@ -4,46 +4,37 @@ import { AppContext } from "../../Helper/Context";
 import SkeletonElement from "../Skeletons/SkeletonElement";
 
 function CardNotification() {
-  const { lastSub, setLastSub } = useContext(AppContext);
-  
+  const { lastSub } = useContext(AppContext);
+
   return (
     <>
-        <SkeletonElement />
+      {lastSub.problem_name === "" && <SkeletonElement />}
+
       <div className="left">
         <div className="problem">
-          <span>{ lastSub.problem_name }</span>
+          <span>{lastSub.problem_name}</span>
         </div>
         <div className="time-sub">
           <div>
-            <span>{ lastSub.date}</span>
+            <span>{lastSub.date}</span>
           </div>
 
           <div>
-            {
-              (lastSub.link !== "" && lastSub.link !== "#") ? 
-              (
-                <a href={ lastSub.link }>Check submission</a>
-              )
-              :
-              ( 
-                <SkeletonElement />
-              )
-            }
+            {lastSub.link !== "" && lastSub.link !== "#" ? (
+              <a href={lastSub.link}>Check submission</a>
+            ) : (
+              <SkeletonElement />
+            )}
           </div>
         </div>
       </div>
-        {
-          lastSub.verdict !== "" ? 
-          (
-          <div className={lastSub.verdict === "WA" ? "wa" : "accepted"}>
-            <span>{lastSub.verdict === "WA" ? "wrong answer" : "accepted"}</span>
-          </div>
-        ) : 
-        (
-          <SkeletonElement />
-        )
-        }
-     
+      {lastSub.verdict !== "" ? (
+        <div className={lastSub.verdict === "wa" ? "wa" : "accepted"}>
+          <span>{lastSub.verdict === "wa" ? "wrong answer" : "accepted"}</span>
+        </div>
+      ) : (
+        <SkeletonElement />
+      )}
     </>
   );
 }
