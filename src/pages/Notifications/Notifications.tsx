@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import { Howl, Howler } from "howler";
 import CardNotification from "./CardNotification";
 import NotificationList from "../NotificationList/NotificationList";
 import { useLocalStorage } from "../useLocalStorage";
@@ -8,30 +9,34 @@ import { AppContext } from "../../helper/Context";
 import Box from "@mui/material/Box";
 import Slide from "@mui/material/Slide";
 import Snackbar, { SnackbarOrigin } from "@mui/material/Snackbar";
-import { Howl, Howler } from "howler";
-import mp3_success from "../../sounds/success_sound.mp3";
-import mp3_failure from "../../sounds/failure_sound.mp3";
 import "../Skeletons/Skeleton.css";
 import "./Notifications.css";
+import { Mutex, MutexInterface, Semaphore, SemaphoreInterface, withTimeout } from 'async-mutex';
+import mp3_success from "./sounds/success_sound.mp3";
+import webm_success from "./sounds/success_sound.webm";
+import mp3_failure from "./sounds/failure_sound.mp3";
+import webm_failure from "./sounds/failure_sound.webm";
 
-const root_path = "sounds/"
+// const root_path = "./sounds/";
 const tracks = [
   {
     id: 1,
     title: "Success",
-    src: [root_path + "success_sound.mp3", root_path + "success_sound.webm"],
+    src: [
+      mp3_success,
+      webm_success /*root_path + "success_sound.mp3" , root_path + "success_sound.webm"*/,
+    ],
   },
   {
     id: 2,
     title: "Failure",
-    src: [root_path + "failure_sound.mp3", root_path + "failure_sound.webm"],
-  }
+    src: [
+      mp3_failure,
+      webm_failure /*root_path + "failure_sound.mp3", root_path + "failure_sound.webm"*/,
+    ],
+  },
 ];
 
-const my_source_success_1 = "sounds/success_sound.mp3";
-const my_source_success_2 = "sounds/success_sound.webm";
-const my_source_failure_1 = "sounds/failure_sound.mp3";
-const my_source_failure_2 = "sounds/failure_sound.webm";
 const music_url =
   "https://jesusful.com/wp-content/uploads/music/2021/09/The_Script_-_Hall_of_Fames_(Naijay.com).mp3";
 
@@ -49,10 +54,14 @@ interface State extends SnackbarOrigin {
 
 function Notifications() {
   Howler.autoUnlock = false;
+  const [selectedHowl, setSelectedHowl] = useState(null);
+  const [playing, setPlaying] = useState(false);
+  const [howl, setHowl] = useState(null);
+  const [volume, setVolume] = useLocalStorage("volume", 80);
 
-  // const queue: Howler[] = [];
-  const [queue, setQueue] = useState([]);
+  const mutex = new Mutex();
 
+  Howler.volume(volume / 100.0);
   function notifyMe(data) {
     let message: string =
       data.handle + " got " + data.verdict + " on " + data.problem_name + ".";
@@ -82,22 +91,13 @@ function Notifications() {
         "AC Force Notification",
         options
       );
-
-      if (data.verdict === "accepted") {
-        // success_sound_effect.play();
-        queue.push(success_sound_effect);
-      } else {
-        // failure_sound_effect.play();
-        queue.push(failure_sound_effect);
-      }
     }
   }
 
-  const [volume, setVolume] = useLocalStorage("volume", 80);
-
   const [success_sound_effect, setSuccessSoundEffect] = useState(
     new Howl({
-      src: [mp3_success, my_source_success_1, my_source_success_2],
+      src: tracks[0].src,
+      autoplay: false,
       volume: volume / 100.0,
       onend: function () {
         console.log("Finished playing!");
@@ -112,8 +112,7 @@ function Notifications() {
 
   const [failure_sound_effect, setFailureSoundEffect] = useState(
     new Howl({
-      src: [mp3_failure, my_source_failure_1, my_source_failure_2],
-      volume: volume / 100.0,
+      src: tracks[1].src,
       onend: function () {
         console.log("Finished playing!");
       },
@@ -124,13 +123,6 @@ function Notifications() {
       },
     })
   );
-
-  useEffect(() => {
-    if (queue.length > 0 && !Howler.isPlaying()) {
-      let ringtone: Howler = queue.shift();
-      ringtone.play();
-    }
-  }, [queue]);
 
   // === Snack Bar notifiaction === //
   const [state, setState] = React.useState<State>({
@@ -152,15 +144,7 @@ function Notifications() {
     return <Slide {...props} direction="left" />;
   }
 
-  // let myMap = new Map<string, LastSubmission>();
-  let myMap = new Map<string, LastSubmission>();
-  myMap.set("user", {
-    handle: "username",
-    problem_name: "Problem ?",
-    date: "2023-08-11",
-    link: "https://example.com/problem2",
-    verdict: "Wrong Answer",
-  });
+  let myMap = JSON.parse(localStorage.getItem('recent_notification')) || {};
 
   // Convert the JSON string back to a Map
   const [all_submissions, setAllSubmissions] = useLocalStorage(
@@ -172,6 +156,7 @@ function Notifications() {
     "friends_submission",
     "1"
   );
+
   const [read_my_submissions, setMySubmissions] = useLocalStorage(
     "my_submission",
     "1"
@@ -191,7 +176,17 @@ function Notifications() {
   const [friends, setFriends] = useLocalStorage("friends", data_friends);
   const [user, setUser] = useLocalStorage("user", "user");
 
-  let urls: string[] = friends;
+  const add_user = {
+    handle: user,
+    url:
+      "https://codeforces.com/api/user.status?handle=" +
+      user +
+      "&from=1&count=2",
+  };
+
+  let urls: string[] = Array.from(friends);
+  urls.push({id: 0, name: user});
+
   urls = urls
     ?.filter((x) => x.name !== "user")
     .map((x) => {
@@ -203,23 +198,15 @@ function Notifications() {
       return url;
     });
 
-  const add_user = {
-    handle: user,
-    url:
-      "https://codeforces.com/api/user.status?handle=" +
-      user +
-      "&from=1&count=2",
-  };
+    const x = {
+      handle: "",
+      problem_name: "",
+      date: "",
+      link: "#",
+      verdict: "",
+    };
 
-  urls.push(add_user);
-
-  const [lastSub, setLastSub] = useLocalStorage("last_submission", {
-    handle: "",
-    problem_name: "",
-    date: "",
-    link: "#",
-    verdict: "",
-  });
+  let lastSub = JSON.parse(localStorage.getItem("last_submission")) || x;
 
   const [isFetching, setIsFetching] = useState(true);
   const [error, setError] = useState<Error | null>(null);
@@ -227,64 +214,45 @@ function Notifications() {
 
   // === Map === //
   try {
-    const storedJsonString = localStorage.getItem("recent_notification");
-    if (storedJsonString) {
-      const parsedArray: [string, LastSubmission][] =
-        JSON.parse(storedJsonString);
-      myMap = new Map<string, LastSubmission>(parsedArray);
-
-      if (myMap.get(user)) {
-        let last_copy: LastSubmission = myMap.get(user);
-        setLastSub(JSON.parse(last_copy));
+      if (myMap[user]) {
+        lastSub = myMap[user] || x;
+        setShouldUpdate(true);
       }
-    }
   } catch (error) {
     console.log(error);
   }
 
-  // ===
-  function addSubmissionAndNotify(data) {
-    const updatedSubmissions = [data, ...all_submissions];
-    setAllSubmissions(updatedSubmissions);
-    handleClick({ vertical: "bottom", horizontal: "right" });
-    const save = JSON.stringify([...updatedSubmissions]);
-    localStorage.setItem("all_submissions", save);
-  }
+  const [shouldUpdate, setShouldUpdate] = useState(false);
 
+  // setShouldUpdate(false);
   // === Async === //
   useEffect(() => {
     async function load_submissions() {
-      if (urls.length === 0) return;
-
-      try {
+      
+      try {  
         const all_requests = urls.map((x) => {
-          const req = axios.get(x);
-          return req;
+          return axios.get(x);
         });
 
-        const AllData = await axios.all(all_requests);
-        AllData.forEach((...AllData) => {
-          if (!AllData[0].data.result[0]) {
-            return;
-          }
+      const AllData = await axios.all(all_requests);
+      await mutex.runExclusive(async () => {
+        for (const response of AllData) {
+          if (!response.data.result[0].author.members) continue;
 
-          if (urls.length === 0) return;
-
-          let handle: string =
-            AllData[0].data.result[0].author.members[0].handle;
-          console.log("Handle: ", handle);
-
-          const root = AllData[0].data.result[0];
-
-          const data: LastSubmission = {
+          console.log("This is the user: ", user);
+      
+          const handle = response.data.result[0].author.members[0].handle;
+      
+          const root = response.data.result[0];
+          const data = {
             handle: handle,
             problem_name: root.problem.name,
             date: new Date(root.creationTimeSeconds * 1000).toLocaleString(),
             link: `https://codeforces.com/contest/${root.contestId}/submission/${root.id}`,
             verdict: root.verdict,
           };
-
-          let res: string = "";
+      
+          let res = "";
           switch (data.verdict) {
             case "TIME_LIMIT_EXCEEDED":
               res = "tle";
@@ -302,44 +270,66 @@ function Notifications() {
               res = "wa";
               break;
           }
-
+      
+          const value_map = myMap[handle.toLowerCase()];
+      
+          if (
+            value_map?.problem_name === data.problem_name &&
+            value_map?.date === data.date
+          )
+            continue;
+      
           data.verdict = res;
-          if (res === "testing") {
-            setIsPending(true);
-          } else {
-            if (
-              !myMap.has(handler) ||
-              (myMap.get(handler)?.problem_name !== data.problem_name &&
-                myMap.get(handler)?.verdict === data.verdict)
-            ) {
-              addSubmissionAndNotify(data);
-
-              myMap.set(handler, data);
-              const mapJson = JSON.stringify([...myMap]);
-              localStorage.setItem("recent_notification", mapJson);
-
-              console.log("User: ", user);
-              console.log("Handle: ", data.handle);
-
-              if (data.handle.toLowerCase() === user?.toLowerCase()) {
-                setLastSub(data);
-                console.log("Got It!");
-              }
-
-              notifyMe(data);
-            }
+      
+          let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
+          copy_array.push(data);
+          localStorage.setItem('all_submissions', JSON.stringify(copy_array));
+      
+          let new_map_json = { ...myMap };
+          new_map_json[data.handle.toLowerCase()] = data;
+          myMap = new_map_json;
+          console.log("After: ", new_map_json);
+      
+          console.log("Handle: ", data.handle);
+      
+          if (data.handle.toLowerCase() === user?.toLowerCase()) {
+            // setLastSub(data);
+            localStorage.setItem('last_submission', JSON.stringify(data));
+            console.log("Got It!");
           }
-        });
-      } catch (err) {
-        // console.log(err);
+      
+          notifyMe(data);
+      
+          if (data.verdict === "accepted") {
+            success_sound_effect.play();
+          } else {
+            failure_sound_effect.play();
+          }
+      
+          if (!shouldUpdate) {
+            setShouldUpdate(true);
+            localStorage.setItem('recent_notification', JSON.stringify(myMap));
+            // localStorage.setItem('all_submissions', JSON.stringify(copy_array));
+          }
+        }
+        
+      });
+      
+      } catch(err) {
+        console.log(err);
       }
+
     }
-
+  
     setTimeout(() => {
-      load_submissions();
-    }, 3000);
-  }, [all_submissions]);
-
+      try {  
+        load_submissions();
+      } catch(err) {
+        console.log(err);
+      }
+    }, 5000);
+  }, [shouldUpdate]);
+  
   return (
     <AppContext.Provider
       value={{
@@ -349,6 +339,7 @@ function Notifications() {
         read_friend_submissions,
         read_my_submissions,
         user,
+        shouldUpdate
       }}
     >
       <Box sx={{ width: 500 }}>

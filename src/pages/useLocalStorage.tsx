@@ -27,12 +27,6 @@ export const useLocalStorage = <T,>(key: string, initialValue: T): ReturnType<T>
                 console.log(err);
             }
         }
-
-        try {
-
-        } catch (err) {
-
-        }
     }, [state, key]);
 
     return [state, setState];

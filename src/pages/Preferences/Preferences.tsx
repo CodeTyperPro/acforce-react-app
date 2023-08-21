@@ -62,10 +62,7 @@ function Preferences() {
   };
 
   // === Using state === //
-  const [friends, setFriends] = useLocalStorage("friends", [{
-    id: 0,
-    name: "user",
-  }]);
+  const [friends, setFriends] = useLocalStorage("friends", []);
 
   // === Delete === //
   const handleDelete = (id: number) => {
@@ -79,6 +76,9 @@ function Preferences() {
 
   // === Insert === //
   const handleAdd = (name: string) => {
+    if (name === "" || name === null)
+      return;
+
     if (friends === undefined || friends === null) {
       return;
     }
@@ -94,7 +94,7 @@ function Preferences() {
 
     const maxId = new_friends.reduce(
       (max, friend) => Math.max(max, friend.id),
-      -1
+      0
     );
     const new_id = maxId + 1;
 

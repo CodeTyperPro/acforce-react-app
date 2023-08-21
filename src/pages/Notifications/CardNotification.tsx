@@ -2,13 +2,29 @@ import React from "react";
 import { useContext } from "react";
 import { AppContext } from "../../helper/Context";
 import SkeletonElement from "../Skeletons/SkeletonElement";
+import { useEffect, useState } from "react";
 
 function CardNotification() {
-  const { lastSub } = useContext(AppContext);
+  const { shouldUpdate } = useContext(AppContext);
+
+  const x = {
+    handle: "",
+    problem_name: "",
+    date: "",
+    link: "#",
+    verdict: "",
+  };
+
+  const [lastSub, setLastSub] = useState(JSON.parse(localStorage.getItem('last_submission')) || x);
+
+  useEffect(() => {
+    let copy_last = JSON.parse(localStorage.getItem('last_submission')) || x;
+    setLastSub(copy_last);
+  }, [shouldUpdate])
 
   return (
     <>
-      {lastSub.problem_name === "" && <SkeletonElement />}
+      {(lastSub.problem_name === "" || lastSub === undefined || lastSub === null) && <SkeletonElement />}
 
       <div className="left">
         <div className="problem">

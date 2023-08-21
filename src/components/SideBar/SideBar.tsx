@@ -32,16 +32,20 @@ function SideBar() {
     async function fetchData() {
       try {
         const response = await axios.get(url);
+
         const root = response.data.result["0"];
         let result: string = root.verdict;
 
-        if (response.status === 200) {
+        console.log("Let's check: ", root);
+
+        if (response.status !== 200) {
           setIsPending(true);
         } else {
           setIsPending(false);
         }
       } catch (err) {
         console.log(err);
+        setIsPending(true);
       }
     }
 
@@ -81,11 +85,20 @@ function SideBar() {
           </Link>
         </div>
 
-        <div className="processing" style={{ opacity: isPending ? 100 : 0 }}>
-          <CircularProgress variant={variant} color="warning">
-            <NewReleasesIcon color="error" fontSize="small" />
-          </CircularProgress>
-          <h6>Response coming ...</h6>
+        <div className="processing">
+          {
+            isPending ?
+            (
+              <CircularProgress variant={variant} color="warning">
+                <NewReleasesIcon color="error" fontSize="small" />
+              </CircularProgress>
+            ) :
+            (
+              <CircularProgress variant="outlined" determinate value = {100} color="success">
+              </CircularProgress>
+            )
+          }
+              <h6> { isPending ? ("Connecting ...") : ("Connected")} </h6>
         </div>
 
         <div className="feedback">
