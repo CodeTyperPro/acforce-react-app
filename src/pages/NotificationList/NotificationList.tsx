@@ -17,7 +17,7 @@ function NotificationList() {
 
   useEffect(() => {
     let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
-    setAllSubmissions(copy_array);
+    setAllSubmissions([...copy_array].reverse());
   }, [shouldUpdate])
 
   return (

@@ -239,7 +239,7 @@ function Notifications() {
         for (const response of AllData) {
           if (!response.data.result[0].author.members) continue;
 
-          console.log("This is the user: ", user);
+          // console.log("This is the user: ", user);
       
           const handle = response.data.result[0].author.members[0].handle;
       
@@ -288,14 +288,16 @@ function Notifications() {
           let new_map_json = { ...myMap };
           new_map_json[data.handle.toLowerCase()] = data;
           myMap = new_map_json;
-          console.log("After: ", new_map_json);
-      
+          // console.log("After: ", new_map_json);
+          
+          
+          console.log("Got new submission! [", Date.now(), "]");
+
           console.log("Handle: ", data.handle);
       
           if (data.handle.toLowerCase() === user?.toLowerCase()) {
             // setLastSub(data);
             localStorage.setItem('last_submission', JSON.stringify(data));
-            console.log("Got It!");
           }
       
           notifyMe(data);

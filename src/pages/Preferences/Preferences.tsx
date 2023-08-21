@@ -86,7 +86,7 @@ function Preferences() {
     // Command to clear the storage:
     if (name === "clear") {
       localStorage.clear();
-      window.location.reload(false);
+      window.location.reload();
       return;
     }
 

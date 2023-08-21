@@ -36,7 +36,7 @@ function SideBar() {
         const root = response.data.result["0"];
         let result: string = root.verdict;
 
-        console.log("Let's check: ", root);
+        // console.log("Let's check: ", root);
 
         if (response.status !== 200) {
           setIsPending(true);
