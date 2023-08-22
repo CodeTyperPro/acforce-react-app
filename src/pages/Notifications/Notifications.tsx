@@ -323,7 +323,7 @@ function Notifications() {
 
     }
   
-    setTimeout(() => {
+    setInterval(() => {
       try {  
         load_submissions();
       } catch(err) {
