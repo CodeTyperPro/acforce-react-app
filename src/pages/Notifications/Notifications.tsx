@@ -283,17 +283,24 @@ function Notifications() {
       
           let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
           copy_array.push(data);
+          copy_array = copy_array.sort((a: LastSubmission, b: LastSubmission) => {
+            const x = new Date(Date.parse(a.date));
+            const y = new Date(Date.parse(b.date));
+
+            // console.log("x: ", x, " - y:", y);
+
+            return y - x;
+          });
+
           localStorage.setItem('all_submissions', JSON.stringify(copy_array));
       
           let new_map_json = { ...myMap };
           new_map_json[data.handle.toLowerCase()] = data;
           myMap = new_map_json;
-          // console.log("After: ", new_map_json);
           
-          
-          console.log("Got new submission! [", Date.now(), "]");
+          console.log("Got new submission!");
 
-          console.log("Handle: ", data.handle);
+          // console.log("Handle: ", data.handle);
       
           if (data.handle.toLowerCase() === user?.toLowerCase()) {
             // setLastSub(data);

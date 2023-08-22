@@ -6,6 +6,15 @@ import { AppContext } from "../../helper/Context";
 import { useLocalStorage } from "../useLocalStorage";
 import { useEffect, useState } from "react";
 
+type LastSubmission = {
+  handle: string;
+  problem_name: string;
+  date: string;
+  link: string;
+  verdict: string;
+};
+
+
 function NotificationList() {
   //const { all_submissions } = useContext(AppContext);
   const { read_friend_submissions } = useContext(AppContext);
@@ -17,7 +26,7 @@ function NotificationList() {
 
   useEffect(() => {
     let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
-    setAllSubmissions([...copy_array].reverse());
+    setAllSubmissions([...copy_array]);
   }, [shouldUpdate])
 
   return (

@@ -13,10 +13,36 @@ import axios from "axios";
 
 function SideBar() {
   const [user, setUser] = useLocalStorage("user", "user");
+
   const handleChangeUser = (e: any) => {
     let x: string = e.target.value;
     setUser(x);
+    
   };
+
+  const handleEnterUser = (e: any) => {
+
+    if (e.key === 'Enter') {
+      console.log("I was entered.");
+
+      let myMap = JSON.parse(localStorage.getItem('recent_notification')) || {};
+      delete myMap[user.toLowerCase()];
+      localStorage.setItem('recent_notification', JSON.stringify(myMap)); 
+      
+      // === Remove user === //
+      let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
+      let index: number = copy_array.findIndex((x) => {
+        return x !== null && x.handle === user;
+      })
+
+      if (index >= 0 && index < copy_array.length) {
+        delete copy_array[index];
+        copy_array = copy_array.filter(x => x !== null);
+      }
+
+      localStorage.setItem('all_submissions', JSON.stringify(copy_array));
+    }
+  }
 
   const [variant, setVariant] = React.useState<VariantProp>("solid");
 
@@ -49,7 +75,9 @@ function SideBar() {
       }
     }
 
-    fetchData();
+    setInterval(() => {
+      fetchData();
+    }, 60000);
   }, [isPending]);
 
   return (
@@ -69,6 +97,7 @@ function SideBar() {
             placeholder="User"
             required
             onChange={handleChangeUser}
+            onKeyPress={handleEnterUser}
           />
         </div>
 
