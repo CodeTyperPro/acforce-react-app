@@ -280,14 +280,11 @@ function Notifications() {
             continue;
       
           data.verdict = res;
-      
           let copy_array = JSON.parse(localStorage.getItem('all_submissions')) || [];
           copy_array.push(data);
           copy_array = copy_array.sort((a: LastSubmission, b: LastSubmission) => {
-            const x = new Date(Date.parse(a.date));
-            const y = new Date(Date.parse(b.date));
-
-            // console.log("x: ", x, " - y:", y);
+            const x = new Date(Date.parse(a.date)).getTime();
+            const y = new Date(Date.parse(b.date)).getTime();
 
             return y - x;
           });
